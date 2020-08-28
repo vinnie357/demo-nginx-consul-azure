@@ -1,4 +1,4 @@
-locals{
+locals {
   rightnow = timestamp()
 }
 
@@ -48,8 +48,8 @@ data azurerm_storage_account_sas controller-sas {
     file  = false
   }
 
-  start  = formatdate("YYYY-MM-DD",local.rightnow)
-  expiry = formatdate("YYYY-MM-DD",timeadd(local.rightnow,"36h"))
+  start  = formatdate("YYYY-MM-DD", local.rightnow)
+  expiry = formatdate("YYYY-MM-DD", timeadd(local.rightnow, "36h"))
 
   permissions {
     read    = true

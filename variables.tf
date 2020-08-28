@@ -83,6 +83,9 @@ variable nginxCert {
   description = "cert for nginxplus"
 }
 # controller
+variable controllerInstallUrl {
+  description = "URL path to controller tar file"
+}
 variable controllerInstanceType {
   default = "Standard_DS1_v2"
 }
@@ -99,6 +102,10 @@ variable controllerLicense {
 }
 variable controllerBucket {
   description = "name of controller installer bucket"
+  default     = "none"
+}
+variable controllerServiceAccount {
+  description = "service account with access to controller installer bucket"
   default     = "none"
 }
 variable controllerAccount {

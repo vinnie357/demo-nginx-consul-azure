@@ -40,7 +40,7 @@ sleep 10
 #secrets=$(gcloud secrets versions access latest --secret="controller-secret")
 #
 # azure
-secrets=$()
+secrets=$(curl -s https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets/{secret-name}/{secret-version}?api-version=7.1)
 #
 # aws
 #code here
@@ -65,12 +65,17 @@ services:
 EOF
 docker-compose up -d
 echo "docker done" >> /status.log
-# install controller
-token=$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/${serviceAccount}/token' -H 'Metadata-Flavor: Google' | jq -r .access_token )
-url="https://storage.googleapis.com/storage/v1/b/${bucket}/o/controller-installer-3.7.0.tar.gz?alt=media"
+# install controller google
+#token=$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/${serviceAccount}/token' -H 'Metadata-Flavor: Google' | jq -r .access_token )
+#url="https://storage.googleapis.com/storage/v1/b/${bucket}/o/controller-installer-3.7.0.tar.gz?alt=media"
+# name=$(basename $url )
+# file=$${name}
+# file=$(echo $file |cut -d'?' -f1)
+# install controller azure
+url="${controllerInstallUrl}"
 name=$(basename $url )
 file=$${name}
-file=$${file%"?alt=media"}
+file=$(echo $file |cut -d'?' -f1)
 echo "$${file}"
 curl -Lsk -H "Metadata-Flavor: Google" -H "Authorization: Bearer $token" $url -o /$file
 tar xzf /$file
@@ -111,7 +116,10 @@ echo 'controller ALL=(ALL:ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
 echo "installing controller" >> /status.log
 sudo tee /retry.sh <<EOF
 # set vars
-local_ipv4="$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip' -H 'Metadata-Flavor: Google')"
+# google
+#local_ipv4="$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip' -H 'Metadata-Flavor: Google')"
+# azure
+local_ipv4="$(curl -s http://169.254.169.254/metadata/instance?api-version=2019-06-01 -H "Metadata:true" | jq -r .network.interface[0].ipv4.ipAddress[0].privateIpAddress)"
 pw="$(echo "$secrets" | jq -r .pass)"
 admin="$(echo "$secrets" | jq -r .user)"
 dbpass="$(echo "$secrets" | jq -r .dbpass)"
@@ -169,7 +177,10 @@ EOF
 )
 function license() {
     # Check api Ready
-    ip="$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip' -H 'Metadata-Flavor: Google')"
+    # google
+    #ip="$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip' -H 'Metadata-Flavor: Google')"
+    # azure
+    ip="$(curl -s http://169.254.169.254/metadata/instance?api-version=2019-06-01 -H "Metadata:true" | jq -r .network.interface[0].ipv4.ipAddress[0].privateIpAddress)"
     version="api/v1"
     loginUrl="/platform/login"
     count=0

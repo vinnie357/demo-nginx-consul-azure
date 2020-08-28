@@ -7,8 +7,11 @@ data template_file controller_onboard {
   template = file("${path.module}/templates/controller/startup.sh.tpl")
 
   vars = {
-    bucket         = var.controllerBucket
-    serviceAccount = "service account object for bucket access"
+    # google
+    bucket               = var.controllerBucket
+    serviceAccount       = var.controllerServiceAccount
+    # azure
+    controllerInstallUrl = var.controllerInstallUrl
   }
 }
 # Create a Public IP for the Virtual Machines
