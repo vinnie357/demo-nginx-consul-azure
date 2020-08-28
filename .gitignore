@@ -1,4 +1,5 @@
 # custom
+terraform_*_linux_amd64.zip
 admin.auto.tfvars
 admin.auto.tfvars.json
 # Local .terraform directories

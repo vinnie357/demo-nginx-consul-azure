@@ -1,0 +1,11 @@
+nginxKey           = "198rt9de8fu"
+nginxCert          = "fdsfjsakdf"
+adminPassword      = "pleaseusevault"
+adminSourceAddress = ["192.168.1.2/32", "102.67.2.5/32"]
+controllerBucket   = "my-bucket"
+controllerLicense  = "mylicensetext"
+controllerAccount  = "myemail@domain.com"
+controllerPass     = "pleaseusevault"
+dbPass             = "pleaseusevault"
+dbUser             = "mydbuser"
+sshPublicKey       = "123445fdf"
