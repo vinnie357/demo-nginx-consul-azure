@@ -8,10 +8,15 @@ data template_file controller_onboard {
 
   vars = {
     # google
-    bucket               = var.controllerBucket
-    serviceAccount       = var.controllerServiceAccount
+    bucket         = var.controllerBucket
+    serviceAccount = var.controllerServiceAccount
     # azure
     controllerInstallUrl = var.controllerInstallUrl
+    subscriptionId       = data.azurerm_client_config.current.subscription_id
+    resourceGroupName    = azurerm_resource_group.main.name
+    vaultName            = azurerm_key_vault.controller.name
+    secretName           = azurerm_key_vault_secret.controller.name
+    secretVersion        = azurerm_key_vault_secret.controller.version
   }
 }
 # Create a Public IP for the Virtual Machines

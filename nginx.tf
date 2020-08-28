@@ -7,7 +7,14 @@ data template_file nginx_onboard {
   template = file("${path.module}/templates/nginx/startup.sh.tpl")
 
   vars = {
+    # google
     controllerAddress = "12134"
+    # azure
+    subscriptionId    = data.azurerm_client_config.current.subscription_id
+    resourceGroupName = azurerm_resource_group.main.name
+    vaultName         = azurerm_key_vault.nginx.name
+    secretName        = azurerm_key_vault_secret.nginx.name
+    secretVersion     = azurerm_key_vault_secret.nginx.version
   }
 }
 # Create a Public IP for the Virtual Machines

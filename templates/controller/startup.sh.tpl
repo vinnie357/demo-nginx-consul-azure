@@ -40,7 +40,7 @@ sleep 10
 #secrets=$(gcloud secrets versions access latest --secret="controller-secret")
 #
 # azure
-secrets=$(curl -s https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets/{secret-name}/{secret-version}?api-version=7.1)
+secrets=$(curl -s https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.KeyVault/vaults/${vaultName}/secrets/${secretName}/${secretVersion}?api-version=7.1)
 #
 # aws
 #code here
