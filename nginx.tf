@@ -19,7 +19,7 @@ data template_file nginx_onboard {
 }
 # Create a Public IP for the Virtual Machines
 resource azurerm_public_ip nginx {
-  name                = "${var.prefix}nginx-mgmt-pip-${random_pet.buildSuffix.id}"
+  name                = "${var.prefix}-nginx-mgmt-pip-${random_pet.buildSuffix.id}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   allocation_method   = "Dynamic"
@@ -61,7 +61,9 @@ resource azurerm_virtual_machine nginx {
 
   network_interface_ids = [azurerm_network_interface.nginx-mgmt-nic.id]
   vm_size               = var.nginxInstanceType
-
+  identity {
+    type = "SystemAssigned"
+  }
   storage_os_disk {
     name              = "nginxOsDisk"
     caching           = "ReadWrite"
@@ -73,7 +75,7 @@ resource azurerm_virtual_machine nginx {
   # storage_image_reference {
   #     publisher = "Canonical"
   #     offer     = "0001-com-ubuntu-server-focal"
-  #     sku       = "20_04-lts"
+  #     sku       = "20_04-lts"gdf
   #     version   = "latest"
   # }
   storage_image_reference {
@@ -113,7 +115,7 @@ resource azurerm_virtual_machine nginx {
 # Run Startup Script
 resource azurerm_virtual_machine_extension nginx-run-startup-cmd {
   name                 = "${var.prefix}-nginx-run-startup-cmd${random_pet.buildSuffix.id}"
-  depends_on           = [azurerm_virtual_machine.nginx]
+  depends_on           = [azurerm_virtual_machine.nginx, azurerm_role_assignment.nginx-secrets]
   virtual_machine_id   = azurerm_virtual_machine.nginx.id
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"

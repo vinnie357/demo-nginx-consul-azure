@@ -21,7 +21,7 @@ data template_file controller_onboard {
 }
 # Create a Public IP for the Virtual Machines
 resource azurerm_public_ip controller {
-  name                = "${var.prefix}controller-mgmt-pip-${random_pet.buildSuffix.id}"
+  name                = "${var.prefix}-controller-mgmt-pip-${random_pet.buildSuffix.id}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   allocation_method   = "Dynamic"
@@ -63,7 +63,9 @@ resource azurerm_virtual_machine controller {
 
   network_interface_ids = [azurerm_network_interface.controller-mgmt-nic.id]
   vm_size               = var.controllerInstanceType
-
+  identity {
+    type = "SystemAssigned"
+  }
   storage_os_disk {
     name              = "controllerOsDisk"
     caching           = "ReadWrite"
@@ -117,7 +119,7 @@ resource azurerm_virtual_machine controller {
 # Run Startup Script
 resource azurerm_virtual_machine_extension controller-run-startup-cmd {
   name                 = "${var.prefix}-controller-run-startup-cmd${random_pet.buildSuffix.id}"
-  depends_on           = [azurerm_virtual_machine.controller]
+  depends_on           = [azurerm_virtual_machine.controller, azurerm_role_assignment.controller-secrets]
   virtual_machine_id   = azurerm_virtual_machine.controller.id
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"

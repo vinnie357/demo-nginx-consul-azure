@@ -21,6 +21,7 @@ variable adminAccountName {
 }
 variable adminPassword {
   description = "admin password"
+  default     = ""
 }
 variable sshPublicKey {
   description = "contents of admin ssh public key"

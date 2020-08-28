@@ -15,7 +15,7 @@ data template_file consul_onboard {
 }
 # Create a Public IP for the Virtual Machines
 resource azurerm_public_ip consul {
-  name                = "${var.prefix}consul-mgmt-pip-${random_pet.buildSuffix.id}"
+  name                = "${var.prefix}-consul-mgmt-pip-${random_pet.buildSuffix.id}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   allocation_method   = "Dynamic"
@@ -57,7 +57,9 @@ resource azurerm_virtual_machine consul {
 
   network_interface_ids = [azurerm_network_interface.consul-mgmt-nic.id]
   vm_size               = var.consulInstanceType
-
+  identity {
+    type = "SystemAssigned"
+  }
   storage_os_disk {
     name              = "consulOsDisk"
     caching           = "ReadWrite"

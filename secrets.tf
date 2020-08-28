@@ -30,6 +30,7 @@ resource azurerm_key_vault nginx {
       "set",
       "get",
       "delete",
+      "list"
     ]
   }
 
