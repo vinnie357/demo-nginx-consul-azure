@@ -1,33 +1,60 @@
-# variables
-
-# AKS cluster
-variable "resourceName" {
-  default = "AKS-NGINX-TF-DEMO"
+## variables
+# project
+variable prefix {
+  description = "prefix for objects in project"
+  default     = "demonginx"
 }
-variable "clusterName" {
-  default = "kubernetes-aks1"
+variable region {
+  description = "(optional) describe your variable"
+  default     = "East US 2"
 }
-variable "location" {
-  default = "northeurope"
-}
-variable "dnsPrefix" {
-  default = "kubecluster"
-}
-variable "instanceSize" {
-  default = "Standard_D2_v2"
-}
-variable "agentNodes" {
-  default = "1"
+variable location {
+  default = "eastus2"
 }
 # admin
-variable adminSrcAddr {
-  description = "admin src address in cidr"
+variable adminSourceAddress {
+  description = "admin source address in cidr"
 }
-variable adminAccount {
+variable adminAccountName {
   description = "admin account"
+  default     = "zadmin"
 }
-variable adminPass {
+variable adminPassword {
   description = "admin password"
+}
+variable sshPublicKey {
+  description = "contents of admin ssh public key"
+}
+# tags
+variable purpose { default = "public" }
+variable environment { default = "dev" } #ex. dev/staging/prod
+variable owner { default = "dev" }
+variable group { default = "dev" }
+variable costcenter { default = "dev" }
+variable application { default = "workspace" }
+# NETWORK
+variable cidr { default = "10.90.0.0/16" }
+variable "subnets" {
+  type = map(string)
+  default = {
+    "subnet1" = "10.90.1.0/24"
+  }
+}
+# AKS cluster
+variable aksResourceName {
+  default = "AKS-NGINX-TF-DEMO"
+}
+variable aksClusterName {
+  default = "kubernetes-aks1"
+}
+variable aksDnsPrefix {
+  default = "kubecluster"
+}
+variable aksInstanceSize {
+  default = "Standard_D2_v2"
+}
+variable aksAgentNodeCount {
+  default = "1"
 }
 # aks
 variable podCidr {
@@ -36,8 +63,19 @@ variable podCidr {
 }
 
 # consul
-
+variable consulInstanceType {
+  default = "Standard_DS1_v2"
+}
+variable consulDiskType {
+  default = "Premium_LRS"
+}
 # nginx
+variable nginxInstanceType {
+  default = "Standard_DS1_v2"
+}
+variable nginxDiskType {
+  default = "Premium_LRS"
+}
 variable nginxKey {
   description = "key for nginxplus"
 }
@@ -45,6 +83,16 @@ variable nginxCert {
   description = "cert for nginxplus"
 }
 # controller
+variable controllerInstanceType {
+  default = "Standard_DS1_v2"
+}
+variable controllerDiskType {
+  default = "Premium_LRS"
+}
+variable controllerDiskSize {
+  description = "controller os disk size"
+  default     = 80
+}
 variable controllerLicense {
   description = "license for controller"
   default     = "none"

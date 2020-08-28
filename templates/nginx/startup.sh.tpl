@@ -20,7 +20,15 @@ cd /etc/ssl/nginx
 # get cert/key
 # license
 # access secret from secretsmanager
-secrets=$(gcloud secrets versions access latest --secret="nginx-secret")
+# google
+#secrets=$(gcloud secrets versions access latest --secret="nginx-secret")
+#
+# azure
+secrets=$()
+#
+# aws
+#code here
+#
 # install cert key
 echo "setting info from Metadata secret"
 # cert

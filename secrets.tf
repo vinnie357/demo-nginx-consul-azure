@@ -1,11 +1,18 @@
 # secrets
-
+#
+# Create random password
+#
+resource random_password password {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
 # nginx
 # create secret
 resource azurerm_key_vault nginx {
   name                = format("%s%s", "kv-nginx", random_id.server.hex)
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
   sku_name = "premium"
@@ -51,8 +58,8 @@ resource azurerm_key_vault_secret nginx {
 # create secret
 resource azurerm_key_vault controller {
   name                = format("%s%s", "kv-controller", random_id.server.hex)
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
   sku_name = "premium"

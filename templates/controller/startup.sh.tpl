@@ -36,7 +36,15 @@ chmod +x /usr/local/bin/docker-compose
 #Run  services for controller
 sleep 10
 # access secret from secretsmanager
-secrets=$(gcloud secrets versions access latest --secret="controller-secret")
+# google
+#secrets=$(gcloud secrets versions access latest --secret="controller-secret")
+#
+# azure
+secrets=$()
+#
+# aws
+#code here
+#
 cat << EOF > docker-compose.yml
 version: "3.7"
 services:

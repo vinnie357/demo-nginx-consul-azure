@@ -9,9 +9,9 @@ sudo apt-get install unzip jq -y
 # aws
 #local_ipv4="$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)"
 # azure
-#local_ipv4="$(curl -s http://169.254.169.254/metadata/instance?api-version=2019-06-01 -H "Metadata:true" | jq -r .network.interface[0].ipv4.ipAddress[0].privateIpAddress)"
+local_ipv4="$(curl -s http://169.254.169.254/metadata/instance?api-version=2019-06-01 -H "Metadata:true" | jq -r .network.interface[0].ipv4.ipAddress[0].privateIpAddress)"
 # google
-local_ipv4="$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip' -H 'Metadata-Flavor: Google')"
+#local_ipv4="$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip' -H 'Metadata-Flavor: Google')"
 
 #Download Consul
 CONSUL_VERSION=${CONSUL_VERSION}
@@ -74,32 +74,32 @@ EOF
 # EOF
 #
 # azure
-#cat << EOF > /etc/consul.d/client.hcl
-#bind_addr = "$${local_ipv4}"
-#advertise_addr = "$${local_ipv4}"
-#client_addr = "0.0.0.0"
-#retry_join = ["provider=azure tag_name=environment tag_value=f5env tenant_id=1 client_id=1 subscription_id=1 secret_access_key=123"]
-#EOF
-#cat << EOF > /etc/consul.d/server.hcl
-#server = true
-#bootstrap_expect = 1
-#client_addr = "0.0.0.0"
-#retry_join = ["provider=azure tag_name=environment tag_value=f5env tenant_id=1 client_id=1 subscription_id=1 secret_access_key=123"]
-#EOF
-#
-#google
 cat << EOF > /etc/consul.d/client.hcl
 bind_addr = "$${local_ipv4}"
 advertise_addr = "$${local_ipv4}"
 client_addr = "0.0.0.0"
-retry_join = ["provider=gce tag_value=consul-demo project_name=${project} zone_pattern=${zone}"]
+retry_join = ["provider=azure tag_name=environment tag_value=f5env tenant_id=1 client_id=1 subscription_id=1 secret_access_key=123"]
 EOF
 cat << EOF > /etc/consul.d/server.hcl
 server = true
 bootstrap_expect = 1
 client_addr = "0.0.0.0"
-retry_join = ["provider=gce tag_value=consul-demo project_name=${project} zone_pattern=${zone}"]
+retry_join = ["provider=azure tag_name=environment tag_value=f5env tenant_id=1 client_id=1 subscription_id=1 secret_access_key=123"]
 EOF
+#
+# #google
+# cat << EOF > /etc/consul.d/client.hcl
+# bind_addr = "$${local_ipv4}"
+# advertise_addr = "$${local_ipv4}"
+# client_addr = "0.0.0.0"
+# retry_join = ["provider=gce tag_value=consul-demo project_name=${project} zone_pattern=${zone}"]
+# EOF
+# cat << EOF > /etc/consul.d/server.hcl
+# server = true
+# bootstrap_expect = 1
+# client_addr = "0.0.0.0"
+# retry_join = ["provider=gce tag_value=consul-demo project_name=${project} zone_pattern=${zone}"]
+# EOF
 #Enable the service
 sudo systemctl enable consul
 sudo service consul start
