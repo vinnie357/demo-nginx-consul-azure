@@ -1,3 +1,7 @@
+locals{
+  rightnow = timestamp()
+}
+
 resource azurerm_resource_group controller-demo-rg {
   name     = format("%s%s", "controller-storage-rg", random_id.server.hex)
   location = var.location
@@ -44,8 +48,8 @@ data azurerm_storage_account_sas controller-sas {
     file  = false
   }
 
-  start  = "2020-08-27"
-  expiry = "2020-08-29"
+  start  = formatdate("YYYY-MM-DD",local.rightnow)
+  expiry = formatdate("YYYY-MM-DD",timeadd(local.rightnow,"36h"))
 
   permissions {
     read    = true
