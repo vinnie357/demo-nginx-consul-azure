@@ -25,7 +25,7 @@ resource azurerm_storage_blob controller-file {
   storage_account_name   = azurerm_storage_account.controller-demo-storage-account.name
   storage_container_name = azurerm_storage_container.controller-demo-storage-container.name
   type                   = "Block"
-  source                 = file("${path.module}/controller-installer-3.7.0.tar.gz")
+  source                 = "${path.module}/controller-installer-3.7.0.tar.gz"
 }
 data azurerm_storage_account_sas controller-sas {
   connection_string = azurerm_storage_account.controller-demo-storage-account.primary_connection_string
