@@ -24,13 +24,15 @@ resource azurerm_storage_container controller-demo-storage-container {
   storage_account_name  = azurerm_storage_account.controller-demo-storage-account.name
   container_access_type = "private"
 }
-resource azurerm_storage_blob controller-file {
-  name                   = "controller-installer-3.7.0.tar.gz"
-  storage_account_name   = azurerm_storage_account.controller-demo-storage-account.name
-  storage_container_name = azurerm_storage_container.controller-demo-storage-container.name
-  type                   = "Block"
-  source                 = "${path.module}/controller-installer-3.7.0.tar.gz"
-}
+# https://github.com/terraform-providers/terraform-provider-azurerm/issues/4377
+# type = "Block blob"
+# resource azurerm_storage_blob controller-file {
+#   name                   = "controller-installer-3.7.0.tar.gz"
+#   storage_account_name   = azurerm_storage_account.controller-demo-storage-account.name
+#   storage_container_name = azurerm_storage_container.controller-demo-storage-container.name
+#   type                   = "Block"
+#   source                 = "${path.module}/controller-installer-3.7.0.tar.gz"
+# }
 data azurerm_storage_account_sas controller-sas {
   connection_string = azurerm_storage_account.controller-demo-storage-account.primary_connection_string
   https_only        = true
