@@ -61,8 +61,12 @@ resource azurerm_virtual_machine nginx {
 
   network_interface_ids = [azurerm_network_interface.nginx-mgmt-nic.id]
   vm_size               = var.nginxInstanceType
+  # identity {
+  #   type = "SystemAssigned"
+  # }
   identity {
-    type = "SystemAssigned"
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.nginx-sa.id]
   }
   storage_os_disk {
     name              = "nginxOsDisk"
@@ -112,6 +116,7 @@ resource azurerm_virtual_machine nginx {
 }
 # https://staffordwilliams.com/blog/2019/04/14/executing-custom-scripts-during-arm-template-vm-deployment/
 # "commandToExecute": "[concat('curl -o ./custom-script.sh, ' && chmod +x ./custom-script.sh && ./custom-script.sh')]"
+# debug /var/lib/waagent/custom-script/download/0/startup-script.sh
 # Run Startup Script
 resource azurerm_virtual_machine_extension nginx-run-startup-cmd {
   name                 = "${var.prefix}-nginx-run-startup-cmd${random_pet.buildSuffix.id}"

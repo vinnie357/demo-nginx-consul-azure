@@ -63,8 +63,12 @@ resource azurerm_virtual_machine controller {
 
   network_interface_ids = [azurerm_network_interface.controller-mgmt-nic.id]
   vm_size               = var.controllerInstanceType
+  # identity {
+  #   type = "SystemAssigned"
+  # }
   identity {
-    type = "SystemAssigned"
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.controller-sa.id]
   }
   storage_os_disk {
     name              = "controllerOsDisk"
@@ -116,6 +120,7 @@ resource azurerm_virtual_machine controller {
 }
 # https://staffordwilliams.com/blog/2019/04/14/executing-custom-scripts-during-arm-template-vm-deployment/
 # "commandToExecute": "[concat('curl -o ./custom-script.sh, ' && chmod +x ./custom-script.sh && ./custom-script.sh')]"
+# debug /var/lib/waagent/custom-script/download/0/startup-script.sh
 # Run Startup Script
 resource azurerm_virtual_machine_extension controller-run-startup-cmd {
   name                 = "${var.prefix}-controller-run-startup-cmd${random_pet.buildSuffix.id}"

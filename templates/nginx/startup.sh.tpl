@@ -26,7 +26,7 @@ cd /etc/ssl/nginx
 # azure
 secretsUrl="https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.KeyVault/vaults/${vaultName}/secrets/${secretName}/${secretVersion}?api-version=2019-09-01"
 saToken=$(curl -s -H 'Metadata: true' 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/' | jq -r .access_token )
-secrets=$(curl -s -H -H "Authorization: Bearer $saToken" "$secretsUrl")
+secrets=$(curl -s -H "Authorization: Bearer "$saToken"" "$secretsUrl")
 #
 # aws
 #code here

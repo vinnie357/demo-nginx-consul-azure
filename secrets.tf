@@ -16,11 +16,11 @@ resource azurerm_key_vault nginx {
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
   sku_name = "premium"
-
+  # terraform account
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
+    #object_id = data.azurerm_client_config.current.object_id
     object_id = data.azurerm_client_config.current.object_id
-
     key_permissions = [
       "create",
       "get",
@@ -30,6 +30,22 @@ resource azurerm_key_vault nginx {
       "set",
       "get",
       "delete",
+      "list"
+    ]
+  }
+
+  # machine account
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    #object_id = data.azurerm_client_config.current.object_id
+    object_id = azurerm_user_assigned_identity.nginx-sa.principal_id
+    key_permissions = [
+      "create",
+      "get",
+    ]
+
+    secret_permissions = [
+      "get",
       "list"
     ]
   }
@@ -64,11 +80,11 @@ resource azurerm_key_vault controller {
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
   sku_name = "premium"
-
+  # terraform account
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
+    #object_id = data.azurerm_client_config.current.object_id
     object_id = data.azurerm_client_config.current.object_id
-
     key_permissions = [
       "create",
       "get",
@@ -78,6 +94,23 @@ resource azurerm_key_vault controller {
       "set",
       "get",
       "delete",
+      "list"
+    ]
+  }
+
+  # machine account
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    #object_id = data.azurerm_client_config.current.object_id
+    object_id = azurerm_user_assigned_identity.nginx-sa.principal_id
+    key_permissions = [
+      "create",
+      "get",
+    ]
+
+    secret_permissions = [
+      "get",
+      "list"
     ]
   }
 
