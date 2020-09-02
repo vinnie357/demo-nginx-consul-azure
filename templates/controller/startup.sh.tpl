@@ -42,7 +42,7 @@ sleep 10
 # azure
 secretsUrl="https://${vaultName}.vault.azure.net/secrets/${secretName}/${secretVersion}?api-version=2016-10-01"
 saToken=$(curl -s -H 'Metadata: true' 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' | jq -r .access_token )
-secrets=$(curl -s -H "Authorization: Bearer "$saToken"" "$secretsUrl")
+secrets=$(curl -s -H "Authorization: Bearer "$saToken"" "$secretsUrl" | jq -rc .value)
 #
 # aws
 #code here
