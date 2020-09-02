@@ -55,7 +55,7 @@ resource azurerm_network_interface nginx-mgmt-nic {
   }
 }
 resource azurerm_virtual_machine nginx {
-  depends_on           = [azurerm_virtual_machine_extension.controller-run-startup-cmd]
+  depends_on          = [azurerm_virtual_machine_extension.controller-run-startup-cmd]
   name                = "${var.prefix}-nginx-${random_pet.buildSuffix.id}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name

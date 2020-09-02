@@ -121,7 +121,7 @@ resource azurerm_key_vault controller {
 # create secret version
 resource azurerm_key_vault_secret controller {
   name         = format("%s%s", "secret-controller", random_id.server.hex)
-  key_vault_id = azurerm_key_vault.nginx.id
+  key_vault_id = azurerm_key_vault.controller.id
 
   tags = {
     environment = "Dev"
