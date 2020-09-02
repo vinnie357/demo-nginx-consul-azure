@@ -79,9 +79,11 @@ name=$(basename $url )
 file=$${name}
 file=$(echo $file |cut -d'?' -f1)
 echo "$${file}"
-curl -Lsk -H "Metadata-Flavor: Google" -H "Authorization: Bearer $token" $url -o /$file
+# google
+#curl -Lsk -H "Metadata-Flavor: Google" -H "Authorization: Bearer $token" $url -o /$file
 tar xzf /$file
 cd controller-installer
+# google
 #local_ipv4="$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip' -H 'Metadata-Flavor: Google')"
 echo "controller dowloaded" >> /status.log
 # k8s dependencies 

@@ -102,7 +102,7 @@ resource azurerm_key_vault controller {
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
     #object_id = data.azurerm_client_config.current.object_id
-    object_id = azurerm_user_assigned_identity.nginx-sa.principal_id
+    object_id = azurerm_user_assigned_identity.controller-sa.principal_id
     key_permissions = [
       "create",
       "get",

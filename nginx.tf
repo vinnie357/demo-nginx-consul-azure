@@ -55,6 +55,7 @@ resource azurerm_network_interface nginx-mgmt-nic {
   }
 }
 resource azurerm_virtual_machine nginx {
+  depends_on           = [azurerm_virtual_machine_extension.controller-run-startup-cmd]
   name                = "${var.prefix}-nginx-${random_pet.buildSuffix.id}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
@@ -116,7 +117,8 @@ resource azurerm_virtual_machine nginx {
 }
 # https://staffordwilliams.com/blog/2019/04/14/executing-custom-scripts-during-arm-template-vm-deployment/
 # "commandToExecute": "[concat('curl -o ./custom-script.sh, ' && chmod +x ./custom-script.sh && ./custom-script.sh')]"
-# debug /var/lib/waagent/custom-script/download/0/startup-script.sh
+# debug
+# sudo cat /var/lib/waagent/custom-script/download/0/startup-script.sh
 # Run Startup Script
 resource azurerm_virtual_machine_extension nginx-run-startup-cmd {
   name                 = "${var.prefix}-nginx-run-startup-cmd${random_pet.buildSuffix.id}"
