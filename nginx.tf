@@ -8,8 +8,9 @@ data template_file nginx_onboard {
 
   vars = {
     # google
-    controllerAddress = "12134"
+    #controllerAddress = "12134"
     # azure
+    controllerAddress = azurerm_network_interface.controller-mgmt-nic.private_ip_address
     subscriptionId    = data.azurerm_client_config.current.subscription_id
     resourceGroupName = azurerm_resource_group.main.name
     vaultName         = azurerm_key_vault.nginx.name
@@ -55,13 +56,15 @@ resource azurerm_network_interface nginx-mgmt-nic {
   }
 }
 resource azurerm_virtual_machine nginx {
-  depends_on          = [azurerm_virtual_machine_extension.controller-run-startup-cmd]
+  #depends_on          = [azurerm_virtual_machine_extension.controller-run-startup-cmd]
+  depends_on          = [azurerm_virtual_machine.controller]
   name                = "${var.prefix}-nginx-${random_pet.buildSuffix.id}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
-  network_interface_ids = [azurerm_network_interface.nginx-mgmt-nic.id]
-  vm_size               = var.nginxInstanceType
+  network_interface_ids         = [azurerm_network_interface.nginx-mgmt-nic.id]
+  vm_size                       = var.nginxInstanceType
+  delete_os_disk_on_termination = true
   # identity {
   #   type = "SystemAssigned"
   # }
@@ -94,7 +97,7 @@ resource azurerm_virtual_machine nginx {
     computer_name  = "nginx"
     admin_username = var.adminAccountName
     admin_password = var.adminPassword == "" ? random_password.password.result : var.adminPassword
-    custom_data    = data.template_file.nginx_onboard.rendered
+    #custom_data    = data.template_file.nginx_onboard.rendered
   }
 
   os_profile_linux_config {
@@ -131,7 +134,7 @@ resource azurerm_virtual_machine_extension nginx-run-startup-cmd {
   settings = <<SETTINGS
     {
         "commandToExecute": "echo '${base64encode(data.template_file.nginx_onboard.rendered)}' >> ./startup.sh && cat ./startup.sh | base64 -d >> ./startup-script.sh && chmod +x ./startup-script.sh && rm ./startup.sh && bash ./startup-script.sh"
-        
+
     }
   SETTINGS
 

@@ -55,8 +55,9 @@ resource azurerm_virtual_machine consul {
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
-  network_interface_ids = [azurerm_network_interface.consul-mgmt-nic.id]
-  vm_size               = var.consulInstanceType
+  network_interface_ids         = [azurerm_network_interface.consul-mgmt-nic.id]
+  vm_size                       = var.consulInstanceType
+  delete_os_disk_on_termination = true
   identity {
     type = "SystemAssigned"
   }
@@ -109,27 +110,27 @@ resource azurerm_virtual_machine consul {
 # https://staffordwilliams.com/blog/2019/04/14/executing-custom-scripts-during-arm-template-vm-deployment/
 # "commandToExecute": "[concat('curl -o ./custom-script.sh, ' && chmod +x ./custom-script.sh && ./custom-script.sh')]"
 # Run Startup Script
-resource azurerm_virtual_machine_extension consul-run-startup-cmd {
-  name                 = "${var.prefix}-consul-run-startup-cmd${random_pet.buildSuffix.id}"
-  depends_on           = [azurerm_virtual_machine.consul]
-  virtual_machine_id   = azurerm_virtual_machine.consul.id
-  publisher            = "Microsoft.Azure.Extensions"
-  type                 = "CustomScript"
-  type_handler_version = "2.0"
+# resource azurerm_virtual_machine_extension consul-run-startup-cmd {
+#   name                 = "${var.prefix}-consul-run-startup-cmd${random_pet.buildSuffix.id}"
+#   depends_on           = [azurerm_virtual_machine.consul]
+#   virtual_machine_id   = azurerm_virtual_machine.consul.id
+#   publisher            = "Microsoft.Azure.Extensions"
+#   type                 = "CustomScript"
+#   type_handler_version = "2.0"
 
-  settings = <<SETTINGS
-    {
-        "commandToExecute": "echo '${base64encode(data.template_file.consul_onboard.rendered)}' >> ./startup.sh && cat ./startup.sh | base64 -d >> ./startup-script.sh && chmod +x ./startup-script.sh && rm ./startup.sh && bash ./startup-script.sh"
-        
-    }
-  SETTINGS
+#   settings = <<SETTINGS
+#     {
+#         "commandToExecute": "echo '${base64encode(data.template_file.consul_onboard.rendered)}' >> ./startup.sh && cat ./startup.sh | base64 -d >> ./startup-script.sh && chmod +x ./startup-script.sh && rm ./startup.sh && bash ./startup-script.sh"
 
-  tags = {
-    Name        = "${var.environment}-consul-startup-cmd"
-    environment = var.environment
-    owner       = var.owner
-    group       = var.group
-    costcenter  = var.costcenter
-    application = var.application
-  }
-}
+#     }
+#   SETTINGS
+
+#   tags = {
+#     Name        = "${var.environment}-consul-startup-cmd"
+#     environment = var.environment
+#     owner       = var.owner
+#     group       = var.group
+#     costcenter  = var.costcenter
+#     application = var.application
+#   }
+# }

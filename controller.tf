@@ -61,8 +61,9 @@ resource azurerm_virtual_machine controller {
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
-  network_interface_ids = [azurerm_network_interface.controller-mgmt-nic.id]
-  vm_size               = var.controllerInstanceType
+  network_interface_ids         = [azurerm_network_interface.controller-mgmt-nic.id]
+  vm_size                       = var.controllerInstanceType
+  delete_os_disk_on_termination = true
   # identity {
   #   type = "SystemAssigned"
   # }
@@ -96,7 +97,7 @@ resource azurerm_virtual_machine controller {
     computer_name  = "controller"
     admin_username = var.adminAccountName
     admin_password = var.adminPassword == "" ? random_password.password.result : var.adminPassword
-    custom_data    = data.template_file.controller_onboard.rendered
+    #custom_data    = data.template_file.controller_onboard.rendered
 
   }
 
@@ -120,7 +121,8 @@ resource azurerm_virtual_machine controller {
 }
 # https://staffordwilliams.com/blog/2019/04/14/executing-custom-scripts-during-arm-template-vm-deployment/
 # "commandToExecute": "[concat('curl -o ./custom-script.sh, ' && chmod +x ./custom-script.sh && ./custom-script.sh')]"
-# debug /var/lib/waagent/custom-script/download/0/startup-script.sh
+# debug 
+# sudo cat /var/lib/waagent/custom-script/download/0/startup-script.sh
 # Run Startup Script
 resource azurerm_virtual_machine_extension controller-run-startup-cmd {
   name                 = "${var.prefix}-controller-run-startup-cmd${random_pet.buildSuffix.id}"
@@ -133,7 +135,7 @@ resource azurerm_virtual_machine_extension controller-run-startup-cmd {
   settings = <<SETTINGS
     {
         "commandToExecute": "echo '${base64encode(data.template_file.controller_onboard.rendered)}' >> ./startup.sh && cat ./startup.sh | base64 -d >> ./startup-script.sh && chmod +x ./startup-script.sh && rm ./startup.sh && bash ./startup-script.sh"
-        
+
     }
   SETTINGS
 

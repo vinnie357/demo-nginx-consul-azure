@@ -52,7 +52,7 @@ variable aksDnsPrefix {
   default = "kubecluster"
 }
 variable aksInstanceSize {
-  default = "Standard_D2_v2"
+  default = "Standard_DS3_v2"
 }
 variable aksAgentNodeCount {
   default = "1"
@@ -65,14 +65,14 @@ variable podCidr {
 
 # consul
 variable consulInstanceType {
-  default = "Standard_DS1_v2"
+  default = "Standard_DS2_v2"
 }
 variable consulDiskType {
   default = "Premium_LRS"
 }
 # nginx
 variable nginxInstanceType {
-  default = "Standard_DS1_v2"
+  default = "Standard_DS2_v2"
 }
 variable nginxDiskType {
   default = "Premium_LRS"
@@ -88,7 +88,7 @@ variable controllerInstallUrl {
   description = "URL path to controller tar file"
 }
 variable controllerInstanceType {
-  default = "Standard_DS1_v2"
+  default = "Standard_DS4_v2"
 }
 variable controllerDiskType {
   default = "Premium_LRS"

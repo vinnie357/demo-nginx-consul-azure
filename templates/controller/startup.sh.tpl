@@ -81,8 +81,14 @@ file=$(echo $file |cut -d'?' -f1)
 echo "$${file}"
 # google
 #curl -Lsk -H "Metadata-Flavor: Google" -H "Authorization: Bearer $token" $url -o /$file
+# azure
+curl -Lsk $url -o /$file
 tar xzf /$file
-cd controller-installer
+# google
+# cd controller-installer
+# azure
+mv /var/lib/waagent/custom-script/download/0/controller-installer /controller-installer
+cd /controller-installer
 # google
 #local_ipv4="$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip' -H 'Metadata-Flavor: Google')"
 echo "controller dowloaded" >> /status.log
@@ -113,17 +119,52 @@ echo "k8s deps done" >> /status.log
 
 echo "creating user" >> /status.log
 # create controller user
-adduser controller
+adduser --disabled-password --shell /bin/bash --gecos "" controller
 usermod -aG sudo,adm,docker controller
-echo 'controller ALL=(ALL:ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
+#echo 'controller ALL=(ALL:ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
+echo 'controller ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
 # start install
 echo "installing controller" >> /status.log
-sudo tee /retry.sh <<EOF
+# google
+# tee /retry.sh <<EOF
+# # set vars
+# local_ipv4="$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip' -H 'Metadata-Flavor: Google')"
+# pw="$(echo "$secrets" | jq -r .pass)"
+# admin="$(echo "$secrets" | jq -r .user)"
+# dbpass="$(echo "$secrets" | jq -r .dbpass)"
+# dbuser="$(echo "$secrets" | jq -r .dbuser)"
+# cd /controller-installer/
+# ./install.sh \
+# --non-interactive \
+# --accept-license \
+# --self-signed-cert \
+# --db-host "\$local_ipv4" \
+# --db-port 5432 \
+# --db-user "\$dbuser" \
+# --db-pass "\$dbpass" \
+# --smtp-host "\$local_ipv4" \
+# --smtp-port 2587 \
+# --smtp-authentication false \
+# --smtp-use-tls false \
+# --noreply-address noreply@example.com \
+# --admin-email "\$admin" \
+# --admin-password "\$pw" \
+# --fqdn "\$local_ipv4" \
+# --admin-firstname Admin \
+# --admin-lastname Nginx \
+# --tsdb-volume-type local \
+# --organization-name F5
+# EOF
+#azure
+cat >> /retry.sh << 'EOF'
 # set vars
 # google
 #local_ipv4="$(curl -s -f --retry 20 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip' -H 'Metadata-Flavor: Google')"
 # azure
 local_ipv4="$(curl -s http://169.254.169.254/metadata/instance?api-version=2019-06-01 -H "Metadata:true" | jq -r .network.interface[0].ipv4.ipAddress[0].privateIpAddress)"
+secretsUrl="https://${vaultName}.vault.azure.net/secrets/${secretName}/${secretVersion}?api-version=2016-10-01"
+saToken=$(curl -s -H 'Metadata: true' 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' | jq -r .access_token )
+secrets=$(curl -s -H "Authorization: Bearer "$saToken"" "$secretsUrl" | jq -rc .value)
 pw="$(echo "$secrets" | jq -r .pass)"
 admin="$(echo "$secrets" | jq -r .user)"
 dbpass="$(echo "$secrets" | jq -r .dbpass)"
@@ -133,18 +174,18 @@ cd /controller-installer/
 --non-interactive \
 --accept-license \
 --self-signed-cert \
---db-host "\$local_ipv4" \
+--db-host "$local_ipv4" \
 --db-port 5432 \
---db-user "\$dbuser" \
---db-pass "\$dbpass" \
---smtp-host "\$local_ipv4" \
+--db-user "$dbuser" \
+--db-pass "$dbpass" \
+--smtp-host "$local_ipv4" \
 --smtp-port 2587 \
 --smtp-authentication false \
 --smtp-use-tls false \
 --noreply-address noreply@example.com \
---admin-email "\$admin" \
---admin-password "\$pw" \
---fqdn "\$local_ipv4" \
+--admin-email "$admin" \
+--admin-password "$pw" \
+--fqdn "$local_ipv4" \
 --admin-firstname Admin \
 --admin-lastname Nginx \
 --tsdb-volume-type local \
