@@ -3,6 +3,7 @@ nginx k8s consul in aks
 
 ## Prep
   - create storage bucket with controller install tar.gz file
+    - Example in ./storage
   - copy example admin vars to new file
     ```bash
       cp admin.auto.tfvars.example admin.auto.tfvars
