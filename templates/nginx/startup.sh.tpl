@@ -102,6 +102,9 @@ do
 status=$(curl -ksi https://$ip/$version$loginUrl  | grep HTTP | awk '{print $2}')
 if [[ $status == "401" ]]; then
     echo "ready $status"
+    # wait for controller services
+    echo "waiting 60 for controller"
+    sleep 60
     curl -sk --header "Content-Type:application/json"  --data "$payload" --url https://$ip/$version$loginUrl --dump-header /cookie.txt
     cookie=$(cat /cookie.txt | grep Set-Cookie: | awk '{print $2}')
     rm /cookie.txt
@@ -121,5 +124,7 @@ sleep 60
 done
 }
 register
-
+# start nginx
+nginx
 echo "done"
+exit
